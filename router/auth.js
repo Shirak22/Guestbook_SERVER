@@ -1,5 +1,5 @@
 const {Router} = require('express'); 
-const { checkUserdata, userExistence } = require('../middleware/validate');
+const { validateRegisterUserInput, userExistence } = require('../middleware/userControl');
 const { User } = require('../models/user');
 const generateToken = require('../utils/generateToken'); 
 const router = Router();
@@ -8,24 +8,24 @@ const router = Router();
 
 //user register 
 //@method post
-router.post('/register',checkUserdata,userExistence,async(req,res)=> {
+router.post('/register',validateRegisterUserInput,userExistence,async(req,res)=> {
     const  {username,country,email,password} = req.body; 
-    const userCreate = await User.create({
+    const user = await User.create({
         username,
         country,
         email,
         password
     });
     
-    if(userCreate){
+    if(user){
         //generating jwt and set it in cookie.
-        generateToken(res,userCreate._id);
-        console.log(userCreate);
+        generateToken(res,user._id);
+        console.log(user);
         
         res.status(201).json({success:true,user:{
-            _id:userCreate._id,
-            username:userCreate.username,
-            email:userCreate.email
+            _id:user._id,
+            username:user.username,
+            email:user.email
         }}); 
     }else {
         res.status(400).json({success:false, message:'Faild to create user!'});

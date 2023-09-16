@@ -1,6 +1,6 @@
 const {Router} = require('express'); 
 const router = Router();
-const {protect} = require('../middleware/validate');
+const {protect} = require('../middleware/userControl');
 const {User} = require('../models/user'); 
 
 
