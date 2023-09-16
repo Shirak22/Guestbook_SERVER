@@ -1,5 +1,5 @@
 const {Router} = require('express'); 
-const { validateRegisterUserInput, userExistence } = require('../middleware/userControl');
+const { validateRegisterUserInput, userExistence, protect } = require('../middleware/userControl');
 const { User } = require('../models/user');
 const generateToken = require('../utils/generateToken'); 
 const router = Router();
@@ -47,7 +47,34 @@ router.post('/login', async (req,res)=> {
     }
 
 
-}); 
+});
+
+//user update user
+router.put('/update',protect, async (req,res)=> {
+    const user = await User.findOne({_id:req.user._id});
+
+    //if the user found, 
+    if(user ){
+             //if there is any new username or password then it will use it or it will be that the saved. 
+        user.username = req.body.username || req.user.username;
+        user.email = req.body.email || req.user.email; 
+        
+            //the user can change the password also 
+            if(req.body.password){
+                user.password = req.body.password;
+            }
+            
+        const updatedUser = await user.save();
+        res.status(200).json({success:true,user: {
+            username:updatedUser.username,
+            email:updatedUser.email,
+        }})
+    }else {
+        res.status(401).json({success:false, message:'User not found'});
+    }
+
+});
+ 
 //user logout 
 router.post('/logout', async (req,res)=> {
     res.cookie('jwt','', {
