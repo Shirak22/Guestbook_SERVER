@@ -47,8 +47,8 @@ const protect = async (req,res,next)=> {
     let token = req.cookies.jwt; 
     if(token){  
         try {
-           const decoded = await jwt.verify(token, process.env.JWT_SECRET); 
-           req.user = await User.findById(decoded.userId).select('-password');//get the user without the password
+           const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+           req.user = await User.findOne({userId:decoded.userId}).select('-password');//get the user without the password
            next();
         } catch (error) {
             res.status(401).json({success:false, message:'invalid token'}); 

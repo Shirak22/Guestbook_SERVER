@@ -9,6 +9,7 @@ const router = Router();
 //user register 
 //@method post
 router.post('/register',validateRegisterUserInput,userExistence,async(req,res)=> {
+  try {
     const  {username,country,email,password} = req.body; 
     const user = await User.create({
         username,
@@ -19,17 +20,22 @@ router.post('/register',validateRegisterUserInput,userExistence,async(req,res)=>
     
     if(user){
         //generating jwt and set it in cookie.
-        generateToken(res,user._id);
-        console.log(user);
-        
+        generateToken(res,user.userId);
         res.status(201).json({success:true,user:{
-            _id:user._id,
+            userId:user.userId,
             username:user.username,
             email:user.email
         }}); 
     }else {
         res.status(400).json({success:false, message:'Faild to create user!'});
     }
+
+  } catch (error) {
+    res.json({
+        success:false,
+        message:error.message
+    })
+  }
 });
 
 
@@ -39,10 +45,10 @@ router.post('/login', async (req,res)=> {
     const user = await User.findOne({email:email});
 
     if(user && (await user.passwordMatch(password))){
-        generateToken(res,user._id);
-        res.json({success:true,message:{_id:user._id,email:user.email,username:user.username,}});
+        generateToken(res,user.userId);
+        res.json({success:true,message:{userId:user.userId,email:user.email,username:user.username,}});
     }else {
-        res.json({success:false,message:'Please check your email or password! '});
+        res.json({success:false,message:'Please check your email or password! '}); 
 
     }
 
@@ -51,13 +57,15 @@ router.post('/login', async (req,res)=> {
 
 //user update user
 router.put('/update',protect, async (req,res)=> {
-    const user = await User.findOne({_id:req.user._id});
+    try {
+        const user = await User.findOne({userId:req.user.userId});
 
     //if the user found, 
     if(user ){
              //if there is any new username or password then it will use it or it will be that the saved. 
         user.username = req.body.username || req.user.username;
-        user.email = req.body.email || req.user.email; 
+        user.email = req.body.email || req.user.email;
+        user.country = req.body.country || req.user.country; 
         
             //the user can change the password also 
             if(req.body.password){
@@ -68,11 +76,17 @@ router.put('/update',protect, async (req,res)=> {
         res.status(200).json({success:true,user: {
             username:updatedUser.username,
             email:updatedUser.email,
+            country:updatedUser.country
         }})
     }else {
         res.status(401).json({success:false, message:'User not found'});
     }
 
+    } catch (error) {
+        res.json({success:false, 
+        message: error.message});
+    }
+    
 });
  
 //user logout 

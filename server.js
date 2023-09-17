@@ -17,7 +17,9 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use('/api/',mainRoute); 
 app.use('/api/auth',authRoute); 
-
+app.all('*',(req,res)=> {
+    res.status(404).json({success:false,message: '404 The page not found! '}); 
+})
 
 
 app.listen(3000,()=> console.log('The server is running on port 3000')); 
