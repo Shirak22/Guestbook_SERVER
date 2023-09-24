@@ -10,7 +10,7 @@ const validateEntryInput = (req, res, next) => {
             res.status(401).json({
                 success:false,
                 message:'Please make sure your input data are valid',
-                validInput: ['Your comment should be min 20 characters and max 1200','spaces included! ']
+                validInput: 'Your comment should be at least 20 characters and max 1200,  spaces included!'
             });
         }
 
