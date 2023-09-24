@@ -8,7 +8,7 @@ const { validateEntryInput } = require('../middleware/entryControl');
 
 //public route
 router.get('/', async (req,res)=> {
-    const entries = await Entry.find({}).select('-_id id username country comment');
+    const entries = await Entry.find({}).select('-_id id userId username country comment createdAt');
     res.json(entries);
 }); 
 
@@ -22,7 +22,7 @@ router.post('/sign',protect,validateEntryInput,async (req,res)=> {
             userId:userId,
             email,
             country,
-            comment,
+            comment:comment,
         });
 
         res.status(200).json({success:true,
@@ -59,10 +59,10 @@ router.put('/update/:id',protect,validateEntryInput,async (req,res)=> {
 
 router.delete('/delete/:id',protect,async (req,res)=> {
     const commentId = req.params?.id;
-    const entry = await Entry.findOne({_id:commentId});
+    const entry = await Entry.findOne({id:commentId});
     if(entry){
-        if(entry.userId == req.user._id){
-             await Entry.deleteOne({_id:entry._id}); 
+        if(entry.userId == req.user.userId){
+             await Entry.deleteOne({id:entry.id}); 
             res.json({success:true,message:req.user.username, deletedComment:entry.comment});
         }else {
             res.json({success:false,message:'not authorized'});

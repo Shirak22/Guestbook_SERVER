@@ -25,6 +25,9 @@ const  validateRegisterUserInput = (req,res,next) => {
             res.status(400).json({success:false, message: 'The password length is less then 3 and must  contains [numbers, lowercase and uppercase letters] !'}); 
         }else if(!emailPattern.test(body.email)){
             res.status(400).json({success:false, message: 'The email you provided is not valid !'}); 
+        }else {
+            res.status(400).json({success:false, message: 'The password length is less then 3 and must  contains [numbers, lowercase and uppercase letters] !'}); 
+
         }
     } else{
         res.status(400).json({success:false,message: 'Please check your inputs! '}); 
