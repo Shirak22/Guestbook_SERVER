@@ -8,8 +8,16 @@ const { validateEntryInput } = require('../middleware/entryControl');
 
 //public route
 router.get('/', async (req,res)=> {
-    const entries = await Entry.find({}).select('-_id id userId username country comment createdAt');
-    res.json(entries);
+    const limit = req.query.limit;
+    const page = req.query.page; 
+    const totalEntries = await Entry.countDocuments();
+    const entries = await Entry.find({}).sort({_id:-1}).limit(parseInt(limit)).skip(page).select('-_id id userId username country comment createdAt');
+    const response = {
+        success:true,
+        total_entries:totalEntries, 
+        entries:entries,
+    }
+    res.json(response);
 }); 
 
 
@@ -57,6 +65,10 @@ router.put('/update/:id',protect,validateEntryInput,async (req,res)=> {
       
 });
 
+router.get('/documents',async (req,res)=> {
+    let count = await Entry.countDocuments().exec();
+    res.json({Entries:count});
+})
 router.delete('/delete/:id',protect,async (req,res)=> {
     const commentId = req.params?.id;
     const entry = await Entry.findOne({id:commentId});
@@ -66,11 +78,9 @@ router.delete('/delete/:id',protect,async (req,res)=> {
             res.json({success:true,message:req.user.username, deletedComment:entry.comment});
         }else {
             res.json({success:false,message:'not authorized'});
-
         }
     }else {
         res.json({success:false,message:'No Entry found'});
-
     }
 
       
