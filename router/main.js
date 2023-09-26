@@ -4,8 +4,20 @@ const {protect} = require('../middleware/userControl');
 const {User} = require('../models/user');
 const {Entry} = require('../models/entries');
 const { validateEntryInput } = require('../middleware/entryControl');
+const { viewsCounter } = require('../models/viewscounter');
 
+const createViewsCounter = async () => {
+    //runs once to create the viewCounter
+    const viewsTable = await viewsCounter.find({});
+    //make just one table to save the views counter. 
+    if (viewsTable === undefined || viewsTable.length === 0) {
+        viewsCounter.create({
+            viewsCount: 0
+        });
+    }
 
+} 
+createViewsCounter();
 //public route
 router.get('/', async (req,res)=> {
     const limit = req.query.limit;
@@ -70,6 +82,7 @@ router.get('/documents',async (req,res)=> {
     let count = await Entry.countDocuments().exec();
     res.json({Entries:count});
 })
+
 router.delete('/delete/:id',protect,async (req,res)=> {
     const commentId = req.params?.id;
     const entry = await Entry.findOne({id:commentId});
@@ -87,11 +100,14 @@ router.delete('/delete/:id',protect,async (req,res)=> {
       
 });
 
-router.get('/session',(req,res)=> {
-    let clientIp = req.header('x-forwarded-for')||
-    req.socket.remoteAddress
+router.get('/session',async (req,res)=> {
+    let clientIp = req.header('x-forwarded-for') || req.socket.remoteAddress;
+     await viewsCounter.updateOne({},{$inc:{viewsCount:1}}); 
+      const views = await viewsCounter.findOne({});
+
     res.json({
-        ipadress:clientIp
+        ipadress:clientIp,
+        views_counts:views.viewsCount
     });
 });
 
