@@ -17,6 +17,7 @@ router.get('/', async (req,res)=> {
         total_entries:totalEntries, 
         entries:entries,
     }
+    
     res.json(response);
 }); 
 
@@ -86,5 +87,12 @@ router.delete('/delete/:id',protect,async (req,res)=> {
       
 });
 
+router.get('/session',(req,res)=> {
+    let clientIp = req.header('x-forwarded-for')||
+    req.socket.remoteAddress
+    res.json({
+        ipadress:clientIp
+    });
+});
 
 module.exports = router; 
