@@ -58,12 +58,13 @@ router.post('/login', async (req,res)=> {
 
 //check logged user, 
 router.get('/checkuser',  protect , async (req,res)=> { 
+
     res.status(200).json({
         success:true,
         user:{
-            userId:req.user.userId,
-            username:req.user.username,
-            email:req.user.email
+            userId:req.user?.userId,
+            username:req.user?.username,
+            email:req.user?.email
         }
     })
 }); 
