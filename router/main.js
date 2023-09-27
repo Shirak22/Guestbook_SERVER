@@ -107,7 +107,7 @@ router.get('/session',async (req,res)=> {
 
     res.json({
         ipadress:clientIp,
-        views_counts:views.viewsCount
+        views_counts:views?.viewsCount
     });
 });
 

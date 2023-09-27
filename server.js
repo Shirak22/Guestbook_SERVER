@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const mainRoute = require('./router/main');
 const authRoute = require('./router/auth');
 const cors = require('cors');
+const https = require("https");
+const fs = require("fs");
 
 
 
@@ -17,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(cors({
-    origin:`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
+    origin:`${process.env.FRONTEND_HOST}`,
     credentials:true,
 }));
 app.use('/api/',mainRoute); 
@@ -28,7 +30,16 @@ app.all('*',(req,res)=> {
 })
 
 
-app.listen(process.env.PORT || 3000,()=> console.log('The server is running on port 3000')); 
+https
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync("key.pem"),
+      cert: fs.readFileSync("cert.pem"),
+    },
+    app
+  ).listen(process.env.PORT || 3000,()=> console.log('The server is running on port 3000')); 
 
 
 
