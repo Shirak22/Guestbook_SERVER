@@ -30,17 +30,18 @@ app.all('*',(req,res)=> {
 })
 
 
-https
-  .createServer(
-		// Provide the private and public key to the server by reading each
-		// file's content with the readFileSync() method.
-    {
-      key: fs.readFileSync("key.pem"),
-      cert: fs.readFileSync("cert.pem"),
-    },
-    app
-  ).listen(process.env.PORT || 3000,()=> console.log('The server is running on port 3000')); 
+// https
+//   .createServer(
+// 		// Provide the private and public key to the server by reading each
+// 		// file's content with the readFileSync() method.
+//     {
+//       key: fs.readFileSync("key.pem"),
+//       cert: fs.readFileSync("cert.pem"),
+//     },
+//     app
+//   ).listen(process.env.PORT || 3000,()=> console.log('The server is running on port 3000')); 
 
 
 
 
+app.listen(process.env.PORT || 3000,()=> console.log('The server is running on port 3000')); 

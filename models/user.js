@@ -29,20 +29,24 @@ const userSchema = new mongoose.Schema({
     password: {
         type:String,
         required:true,
-    }
+    },
+    role: {
+        type:String,
+        required:true,
+    },
 }, {
     timestamps: true
 }); 
 
-userSchema.pre('save',async  function(next) {
-    if(!this.isModified('password')){
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
         next();
     }
 
-const salt = await  bcrypt.genSalt(10); 
-this.password = await bcrypt.hash(this.password,salt);
-this.userId =  uuidv4();
-this.email = this.email.toLowerCase(); 
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    this.userId = uuidv4();
+    this.email = this.email.toLowerCase();
 });
 
 //making method into user to check the enterd passowrd validation  with bcrypt and hashed password

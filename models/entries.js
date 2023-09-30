@@ -27,9 +27,12 @@ const entriesSchema = new mongoose.Schema({
         type:String,
         required:true,
         maxLength:1200
+    },
+    createdAt: {
+        type:Date,
     }
-}, {
-    timestamps:true
+
+
 }); 
 
 
@@ -39,7 +42,7 @@ entriesSchema.pre('save',async  function(next) {
     }
 
     this.id = uuidv4();
-
+    this.createdAt = new Date(); 
 });
 
 const Entry = new mongoose.model('Entries',entriesSchema); 

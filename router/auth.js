@@ -15,7 +15,8 @@ router.post('/register',validateRegisterUserInput,userExistence,async(req,res)=>
         username,
         country,
         email,
-        password
+        password,
+        role:'user'
     });
     
     if(user){
@@ -46,7 +47,7 @@ router.post('/login', async (req,res)=> {
 
     if(user && (await user.passwordMatch(password))){
         generateToken(res,user.userId);
-        res.json({success:true,message:{userId:user.userId,email:user.email,username:user.username,}});
+        res.json({success:true,message:{userId:user.userId,email:user.email,username:user.username,role:user?.role}});
     }else {
         res.json({success:false,message:'Please check your email or password! '}); 
 

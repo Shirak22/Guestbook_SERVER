@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const generateToken = (res,userId) => {
     const token = jwt.sign({userId},process.env.JWT_SECRET, {
-        expiresIn: '30d'
+        expiresIn: '1h'
     }); 
     //setting cookie http only 
     res.cookie('jwt',token, {
@@ -12,8 +12,8 @@ const generateToken = (res,userId) => {
         secure: process.env.NODE_ENV !== 'development',
 
         sameSite:'strict',
-        // maxAge: 30days 
-        maxAge: 1000*60*60*24*30
+        // maxAge: 1h 
+        maxAge: 1000*60*60
     }); 
 }
 

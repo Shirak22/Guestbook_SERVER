@@ -60,7 +60,7 @@ router.put('/update/:id',protect,validateEntryInput,async (req,res)=> {
     try {
         const entry = await Entry.findOne({id:commentId});
         if(entry){
-            if(entry.userId === req.user.userId){
+            if(entry.userId === req.user.userId || req.user.role === 'admin'){
                 entry.comment = req.body.comment || entry.comment
                 const updatedComment = await entry.save(); 
                 res.json({success:true,message:req.user.username, updatedComment: updatedComment.comment});
@@ -78,16 +78,11 @@ router.put('/update/:id',protect,validateEntryInput,async (req,res)=> {
       
 });
 
-router.get('/documents',async (req,res)=> {
-    let count = await Entry.countDocuments().exec();
-    res.json({Entries:count});
-})
-
 router.delete('/delete/:id',protect,async (req,res)=> {
     const commentId = req.params?.id;
     const entry = await Entry.findOne({id:commentId});
     if(entry){
-        if(entry.userId == req.user.userId){
+        if(entry.userId == req.user.userId || req.user.role === 'admin'){
              await Entry.deleteOne({id:entry.id}); 
             res.json({success:true,message:req.user.username, deletedComment:entry.comment});
         }else {
